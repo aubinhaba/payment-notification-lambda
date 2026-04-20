@@ -1,0 +1,81 @@
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# Package Files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+CLAUDE.md
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment variables
+.env
+*.env
+!.env.example
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test coverage
+.jacoco/
+jacoco.exec
+
+# Logs
+logs/
+*.log.*
+
+# Local-only — never committed
+docs/
+.local/
+scripts/
+.claude/
+CLAUDE.md
+
+# Any file that looks like a secret must never be committed
+*.pem
+*.key
+*.p12
+*secret*.json
+*secret*.yaml
+*secret*.yml
+*secret*.txt
+credentials
+credentials.*
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+terraform.tfvars
+!terraform.tfvars.example
+.terraform.lock.hcl

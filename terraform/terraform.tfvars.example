@@ -1,0 +1,12 @@
+# Copy this file to terraform.tfvars and fill in the secrets.
+# terraform.tfvars is gitignored — never commit it.
+
+environment             = "dev"
+aws_region              = "eu-west-1"
+
+notification_from_email = "notifications@example.com"
+
+# Secrets — stored in SSM Parameter Store as SecureString.
+stripe_webhook_secret = "whsec_REPLACE_ME"
+stripe_api_key        = "sk_test_REPLACE_ME"
+db_password           = "REPLACE_ME"

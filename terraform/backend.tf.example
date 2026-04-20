@@ -1,0 +1,12 @@
+# Rename this file to `backend.tf` to persist Terraform state in S3.
+# Leave commented for local development.
+
+# terraform {
+#   backend "s3" {
+#     bucket         = "my-terraform-state"
+#     key            = "stripe-payment-notifier/prod.tfstate"
+#     region         = "eu-west-1"
+#     encrypt        = true
+#     dynamodb_table = "terraform-locks"
+#   }
+# }
