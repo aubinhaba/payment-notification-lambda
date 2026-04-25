@@ -34,6 +34,7 @@ CLAUDE.md
 .vscode/
 *.swp
 *.swo
+.github/
 *~
 
 # Environment variables
@@ -79,3 +80,4 @@ credentials.*
 terraform.tfvars
 !terraform.tfvars.example
 .terraform.lock.hcl
+settings-local.xml
