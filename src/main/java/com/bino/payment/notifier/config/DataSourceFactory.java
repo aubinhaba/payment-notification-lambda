@@ -24,6 +24,7 @@ public final class DataSourceFactory {
         config.setConnectionTimeout(10_000);
         config.setIdleTimeout(10_000);
         config.setMaxLifetime(30_000);
+        config.setKeepaliveTime(0); // desactive keepalive — maxLifetime suffisant pour Lambda
         config.setAutoCommit(true);
         config.setPoolName("stripe-notifier-pool");
         return new HikariDataSource(config);

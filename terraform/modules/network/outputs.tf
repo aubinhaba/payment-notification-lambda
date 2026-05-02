@@ -14,6 +14,6 @@ output "lambda_security_group_id" {
 }
 
 output "rds_security_group_id" {
-  description = "Security group attached to the RDS instance — only the Lambda SG may ingress."
+  description = "Security group attached to the RDS instance."
   value       = aws_security_group.rds.id
 }

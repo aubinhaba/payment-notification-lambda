@@ -9,7 +9,7 @@ import com.stripe.net.Webhook;
  * Verifies the {@code Stripe-Signature} header against the raw webhook payload and the
  * endpoint signing secret, and returns the parsed Stripe {@link Event}.
  *
- * <p>This is the first call made by the Lambda handler — any invalid signature short-circuits
+ * This is the first call made by the Lambda handler — any invalid signature short-circuits
  * processing and the message is routed to the DLQ.
  */
 public class StripeWebhookValidator {

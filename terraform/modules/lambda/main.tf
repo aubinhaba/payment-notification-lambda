@@ -13,7 +13,7 @@ resource "aws_lambda_function" "this" {
   timeout          = var.timeout_seconds
   filename         = var.jar_path
   source_code_hash = filebase64sha256(var.jar_path)
-  publish          = true # SnapStart requires a published version
+  publish          = true
 
   snap_start {
     apply_on = "PublishedVersions"
@@ -35,7 +35,6 @@ resource "aws_lambda_function" "this" {
   ]
 }
 
-# SnapStart can only be invoked on a version alias — wire the event source to the alias.
 resource "aws_lambda_alias" "live" {
   name             = "live"
   function_name    = aws_lambda_function.this.function_name

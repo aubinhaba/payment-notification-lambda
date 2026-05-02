@@ -8,6 +8,7 @@ import com.bino.payment.notifier.repository.PaymentNotificationRepositoryImpl;
 import com.bino.payment.notifier.service.NotificationService;
 import com.bino.payment.notifier.stripe.StripeWebhookValidator;
 import lombok.Getter;
+import org.flywaydb.core.Flyway;
 import software.amazon.awssdk.http.SdkHttpClient;
 import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
@@ -19,10 +20,6 @@ import javax.sql.DataSource;
 /**
  * Lazy-initialised singleton that wires the Lambda's dependencies during the INIT phase so
  * SnapStart can snapshot the warmed state.
- *
- * <p>Only non-secret runtime knobs come from environment variables
- * ({@code AWS_REGION}, {@code SSM_PARAMETER_PREFIX}, {@code NOTIFICATION_FROM_EMAIL},
- * {@code DB_URL}, {@code DB_USER}). Secrets are read from SSM Parameter Store.
  */
 @Getter
 public final class AppConfig {
@@ -32,6 +29,7 @@ public final class AppConfig {
     private final StripeWebhookValidator stripeWebhookValidator;
     private final NotificationChannel notificationChannel;
     private final NotificationService notificationService;
+    private final DataSource dataSource;
 
     private AppConfig() {
         String region = requireEnv("AWS_REGION");
@@ -55,11 +53,19 @@ public final class AppConfig {
                 .region(awsRegion).httpClient(http).build();
 
         DataSource dataSource = DataSourceFactory.create(dbUrl, dbUser, dbPassword);
+
+        Flyway.configure()
+                .dataSource(dbUrl, dbUser, dbPassword)
+                .locations("classpath:db/migration")
+                .load()
+                .migrate();
+
         PaymentNotificationRepository repository = new PaymentNotificationRepositoryImpl(dataSource);
 
         this.stripeWebhookValidator = new StripeWebhookValidator(stripeWebhookSecret);
         this.notificationChannel = new SesEmailChannel(sesClient, fromEmail, configurationSet);
         this.notificationService = new NotificationService(repository, notificationChannel);
+        this.dataSource = dataSource;
     }
 
     public static AppConfig getInstance() {

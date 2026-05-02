@@ -18,5 +18,5 @@ variable "max_receive_count" {
 variable "message_retention_seconds" {
   description = "How long the main queue keeps an unprocessed message."
   type        = number
-  default     = 345600 # 4 days
+  default     = 345600
 }

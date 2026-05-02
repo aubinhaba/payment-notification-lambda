@@ -53,6 +53,8 @@ module "lambda" {
   sqs_queue_arn      = module.sqs.queue_arn
   ssm_parameter_arns = module.ssm.parameter_arns
 
+  notification_from_email = var.notification_from_email
+
   environment_variables = {
     SSM_PARAMETER_PREFIX    = local.ssm_prefix
     NOTIFICATION_FROM_EMAIL = var.notification_from_email
@@ -66,7 +68,9 @@ module "api_gateway" {
   source = "./modules/api-gateway"
 
   project            = local.project
+  aws_region         = var.aws_region
   sqs_queue_arn      = module.sqs.queue_arn
-  sqs_queue_url      = module.sqs.queue_url
+  sqs_queue_name     = module.sqs.queue_name
   log_retention_days = var.log_retention_days
+  apigw_account_id   = aws_api_gateway_account.this.cloudwatch_role_arn
 }

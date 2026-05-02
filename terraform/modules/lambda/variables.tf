@@ -72,3 +72,8 @@ variable "batch_size" {
   type        = number
   default     = 1
 }
+
+variable "notification_from_email" {
+  description = "Verified SES identity used as the From: address for customer notifications."
+  type        = string
+}

@@ -5,10 +5,6 @@ import com.bino.payment.notifier.exception.NotificationDeliveryException;
 
 /**
  * Transport that delivers a customer-facing notification.
- * Implementations are stateless and thread-safe.
- *
- * <p>The service layer persists the {@link PaymentNotification} before calling {@link #send};
- * channels must not write to the database or mutate the entity.
  */
 public interface NotificationChannel {
 

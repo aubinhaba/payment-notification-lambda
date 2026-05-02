@@ -14,13 +14,6 @@ import java.util.Optional;
 
 /**
  * Orchestrates the processing of a verified Stripe event:
- * <ol>
- *   <li>skip silently when {@code stripe_event_id} already exists (strict idempotency)</li>
- *   <li>skip when the event type is not {@code payment_intent.succeeded}</li>
- *   <li>persist a {@link NotificationStatus#PENDING} record</li>
- *   <li>deliver the notification via the configured {@link NotificationChannel}</li>
- *   <li>transition to {@code SENT} on success, {@code FAILED} + retry marker on delivery error</li>
- * </ol>
  */
 public class NotificationService {
 
@@ -37,6 +30,14 @@ public class NotificationService {
     public void process(Event event) {
         String eventId = event.getId();
 
+        log.info("Received Stripe event id={} type={} apiVersion={} created={} livemode={} pendingWebhooks={} requestId={}",
+                eventId, event.getType(), event.getApiVersion(),
+                event.getCreated(), event.getLivemode(), event.getPendingWebhooks(),
+                event.getRequest() != null ? event.getRequest().getId() : null);
+        if (log.isDebugEnabled()) {
+            log.debug("Full Stripe event payload: {}", event.toJson());
+        }
+
         if (!PaymentIntentExtractor.EVENT_TYPE.equals(event.getType())) {
             log.info("Skipping unsupported Stripe event type={} id={}", event.getType(), eventId);
             return;
@@ -49,7 +50,12 @@ public class NotificationService {
         }
 
         PaymentNotification notification = PaymentIntentExtractor.toPendingNotification(event);
+        log.info("Extracted notification paymentIntentId={} amount={} currency={} email={}",
+                notification.getStripePaymentIntentId(), notification.getAmount(),
+                notification.getCurrency(), notification.getCustomerEmail());
+
         repository.insert(notification);
+        log.info("Notification persisted id={} eventId={}", notification.getId(), eventId);
 
         try {
             channel.send(notification);

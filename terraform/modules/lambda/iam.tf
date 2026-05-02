@@ -13,7 +13,6 @@ resource "aws_iam_role" "this" {
   assume_role_policy = data.aws_iam_policy_document.assume.json
 }
 
-# VPC ENI management required because the function runs inside the VPC.
 resource "aws_iam_role_policy_attachment" "vpc" {
   role       = aws_iam_role.this.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
@@ -49,7 +48,7 @@ data "aws_iam_policy_document" "inline" {
   statement {
     sid       = "KmsDecryptForSsm"
     actions   = ["kms:Decrypt"]
-    resources = ["*"] # SSM default key — restrict by condition
+    resources = ["*"]
     condition {
       test     = "StringEquals"
       variable = "kms:ViaService"
@@ -64,6 +63,11 @@ data "aws_iam_policy_document" "inline" {
       "ses:SendRawEmail",
     ]
     resources = ["*"]
+    condition {
+      test     = "StringEquals"
+      variable = "ses:FromAddress"
+      values   = [var.notification_from_email]
+    }
   }
 }
 

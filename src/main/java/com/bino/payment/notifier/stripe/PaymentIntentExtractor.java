@@ -2,7 +2,9 @@ package com.bino.payment.notifier.stripe;
 
 import com.bino.payment.notifier.domain.NotificationStatus;
 import com.bino.payment.notifier.domain.PaymentNotification;
+import com.stripe.exception.EventDataObjectDeserializationException;
 import com.stripe.model.Event;
+import com.stripe.model.EventDataObjectDeserializer;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.StripeObject;
 
@@ -18,9 +20,7 @@ public final class PaymentIntentExtractor {
     private PaymentIntentExtractor() {}
 
     public static PaymentNotification toPendingNotification(Event event) {
-        StripeObject obj = event.getDataObjectDeserializer().getObject()
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Cannot deserialise Stripe event data for eventId=" + event.getId()));
+        StripeObject obj = deserialize(event);
 
         if (!(obj instanceof PaymentIntent pi)) {
             throw new IllegalArgumentException(
@@ -46,6 +46,21 @@ public final class PaymentIntentExtractor {
                 .notificationStatus(NotificationStatus.PENDING)
                 .retryCount(0)
                 .build();
+    }
+
+    // getObject() returns empty when the event's Stripe API version differs from the SDK's
+    // compiled version — deserializeUnsafe() skips the version check.
+    private static StripeObject deserialize(Event event) {
+        EventDataObjectDeserializer d = event.getDataObjectDeserializer();
+        if (d.getObject().isPresent()) {
+            return d.getObject().get();
+        }
+        try {
+            return d.deserializeUnsafe();
+        } catch (EventDataObjectDeserializationException e) {
+            throw new IllegalArgumentException(
+                    "Cannot deserialise Stripe event data for eventId=" + event.getId(), e);
+        }
     }
 
     private static String resolveEmail(PaymentIntent pi) {

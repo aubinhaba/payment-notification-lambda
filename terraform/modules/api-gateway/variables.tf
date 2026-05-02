@@ -3,6 +3,11 @@ variable "project" {
   type        = string
 }
 
+variable "aws_region" {
+  description = "AWS region — used to build the SQS integration URI."
+  type        = string
+}
+
 variable "stage_name" {
   description = "API Gateway stage name (appears in the invoke URL path)."
   type        = string
@@ -14,8 +19,8 @@ variable "sqs_queue_arn" {
   type        = string
 }
 
-variable "sqs_queue_url" {
-  description = "URL of the queue — used by the AWS-proxy SendMessage integration."
+variable "sqs_queue_name" {
+  description = "Name of the queue — used in the SQS integration URI path."
   type        = string
 }
 
@@ -23,4 +28,9 @@ variable "log_retention_days" {
   description = "CloudWatch retention for API Gateway access logs."
   type        = number
   default     = 14
+}
+
+variable "apigw_account_id" {
+  description = "cloudwatch_role_arn de aws_api_gateway_account — garantit que le role CloudWatch est configure avant le stage."
+  type        = string
 }

@@ -17,17 +17,6 @@ import java.util.List;
 
 /**
  * Entry point invoked by AWS Lambda when Stripe webhook events arrive from SQS.
- *
- * <p>The Stripe webhook body is forwarded verbatim as the SQS message body, and the
- * {@code Stripe-Signature} header is propagated as a message attribute. The handler orchestrates
- * only — all business logic lives in {@link NotificationService}.
- *
- * <p>Failure policy: <ul>
- *   <li>Invalid Stripe signature → drop the message (do not report as failure). The redrive
- *       policy will route duplicates to the DLQ on their own.</li>
- *   <li>Any other exception → report as a partial-batch failure so SQS retries only the failing
- *       message.</li>
- * </ul>
  */
 public class StripeWebhookHandler implements RequestHandler<SQSEvent, SQSBatchResponse> {
 

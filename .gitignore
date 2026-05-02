@@ -60,6 +60,7 @@ docs/
 scripts/
 .claude/
 CLAUDE.md
+src/main/java/com/bino/payment/notifier/handler/DiagnosticHandler.java
 
 # Any file that looks like a secret must never be committed
 *.pem

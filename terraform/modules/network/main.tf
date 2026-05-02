@@ -19,7 +19,7 @@ resource "aws_subnet" "private" {
 
 resource "aws_security_group" "lambda" {
   name        = "${var.project}-lambda-sg"
-  description = "Egress only — for Lambda in VPC"
+  description = "Egress only - for Lambda in VPC"
   vpc_id      = aws_vpc.this.id
 
   egress {
@@ -65,7 +65,6 @@ resource "aws_security_group" "endpoints" {
   tags = { Name = "${var.project}-endpoints-sg" }
 }
 
-# Interface endpoints so the Lambda can reach SES, SSM, SQS without a NAT Gateway.
 resource "aws_vpc_endpoint" "ssm" {
   vpc_id              = aws_vpc.this.id
   service_name        = "com.amazonaws.${var.aws_region}.ssm"
@@ -76,19 +75,10 @@ resource "aws_vpc_endpoint" "ssm" {
   tags                = { Name = "${var.project}-ssm-endpoint" }
 }
 
-resource "aws_vpc_endpoint" "sqs" {
-  vpc_id              = aws_vpc.this.id
-  service_name        = "com.amazonaws.${var.aws_region}.sqs"
-  vpc_endpoint_type   = "Interface"
-  private_dns_enabled = true
-  subnet_ids          = aws_subnet.private[*].id
-  security_group_ids  = [aws_security_group.endpoints.id]
-  tags                = { Name = "${var.project}-sqs-endpoint" }
-}
-
+# email-smtp would be wrong here — that's the SMTP protocol; SesV2Client uses HTTPS on this endpoint
 resource "aws_vpc_endpoint" "ses" {
   vpc_id              = aws_vpc.this.id
-  service_name        = "com.amazonaws.${var.aws_region}.email-smtp"
+  service_name        = "com.amazonaws.${var.aws_region}.email"
   vpc_endpoint_type   = "Interface"
   private_dns_enabled = true
   subnet_ids          = aws_subnet.private[*].id
